@@ -25,7 +25,7 @@
 > 2. labelme打标签,生成json文件 
 > 3. json文件批量转csv文件
 > 4. 训练网络并保存网络，还没做loss可视化之类的
-> 5. 在test上测试，由于暂时无法检验accuracy，因此先采用保存网络，输入测试集并可视化的方法
+> 5. 在test上测试，由于暂时无法检验accuracy，因此先采用保存网络，输入测试集并可视化的方法（在test文件夹中存入测试图片，运行test_visulize.py）
 
 ![avatar](/1.jpg)
 
