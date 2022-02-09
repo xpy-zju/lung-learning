@@ -63,6 +63,8 @@ optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()),
 # print(y)
 
 
+
+
 class myMSEloss(nn.Module):
     def __init__(self):
         super().__init__()
@@ -85,7 +87,7 @@ loss1 = nn.MSELoss()
 def criterion(outputs,labels):
     # 暂时使用MSE均方损失函数，之后根据目标检测的特性优化为IOU或者其他损失函数
     cost = loss1(outputs,labels)
-    return cost  
+    return cost
 # a = torch.rand(1,5)
 # b = torch.rand(1,5)
 # print(criterion(a,b))
