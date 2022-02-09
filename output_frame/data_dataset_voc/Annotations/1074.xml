@@ -1,0 +1,37 @@
+<annotation>
+  <folder/>
+  <filename>1074.jpg</filename>
+  <database/>
+  <annotation/>
+  <image/>
+  <size>
+    <height>480</height>
+    <width>480</width>
+    <depth>3</depth>
+  </size>
+  <segmented/>
+  <object>
+    <name>whole</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>235.20588235294116</xmin>
+      <ymin>152.20588235294116</ymin>
+      <xmax>266.0882352941176</xmax>
+      <ymax>211.76470588235293</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>whole</name>
+    <pose/>
+    <truncated/>
+    <difficult/>
+    <bndbox>
+      <xmin>304.3235294117647</xmin>
+      <ymin>297.05882352941177</ymin>
+      <xmax>314.6176470588235</xmax>
+      <ymax>369.85294117647055</ymax>
+    </bndbox>
+  </object>
+</annotation>
