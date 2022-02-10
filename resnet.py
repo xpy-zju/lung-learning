@@ -14,10 +14,6 @@ import torchvision
 from torchvision import transforms, datasets,models
 import dataloader
 
-
-
-plt.ion()
-
 # define device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -31,8 +27,10 @@ for param in Myresnet.parameters():
 num_ftrs = Myresnet.fc.in_features #512
 Myresnet.fc = nn.Sequential(
     nn.Dropout(0.5),
-    nn.Linear(num_ftrs, length_label),
-    nn.ReLU()
+    nn.Linear(num_ftrs, 256),
+    nn.ReLU(),
+    nn.Linear(256, 10),
+    nn.Sigmoid()
 )
 
 # for i, para in enumerate(Myresnet.parameters()):
@@ -72,13 +70,13 @@ class myMSEloss(nn.Module):
         loss = 0
         for i in range(len(outputs)):
             if labels[i][0] == 0:
-                loss += (outputs[i][0]-labels[i][0])**2
+                loss += 10*(outputs[i][0]-labels[i][0])**2
             elif labels[i][0] == 1:
-                loss += (outputs[i][0]-labels[i][0])**2 + (outputs[i][1]-labels[i][1])**2+ (outputs[i][2]-labels[i][2])**2+ (outputs[i][3]-labels[i][3])**2
+                loss += 7*(outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2
             elif labels[i][0] == 2:
-                loss += (outputs[i][0]-labels[i][0])**2 + (outputs[i][1]-labels[i][1])**2+ (outputs[i][2]-labels[i][2])**2+ (outputs[i][3]-labels[i][3])**2 + (outputs[i][4]-labels[i][4])**2+ (outputs[i][5]-labels[i][5])**2+ (outputs[i][6]-labels[i][6])**2
+                loss += 4*(outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2 + 2*(outputs[i][4]-labels[i][4])**2+ 2*(outputs[i][5]-labels[i][5])**2+ 2*(outputs[i][6]-labels[i][6])**2
             elif labels[i][0] == 3:
-                loss += (outputs[i][0]-labels[i][0])**2 + (outputs[i][1]-labels[i][1])**2+ (outputs[i][2]-labels[i][2])**2+ (outputs[i][3]-labels[i][3])**2 + (outputs[i][4]-labels[i][4])**2+ (outputs[i][5]-labels[i][5])**2+ (outputs[i][6]-labels[i][6])**2+ (outputs[i][7]-labels[i][7])**2+ (outputs[i][8]-labels[i][8])**2+ (outputs[i][9]-labels[i][9])**2
+                loss += (outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2 + 2*(outputs[i][4]-labels[i][4])**2+ 2*(outputs[i][5]-labels[i][5])**2+ 2*(outputs[i][6]-labels[i][6])**2+ 2*(outputs[i][7]-labels[i][7])**2+ 2*(outputs[i][8]-labels[i][8])**2+ 2*(outputs[i][9]-labels[i][9])**2
         loss = loss/len(outputs)
         return   (torch.tensor(0.0, requires_grad=True) if loss ==0  else loss)
 myloss = myMSEloss()
@@ -112,6 +110,7 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
 
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
+    least_loss = 10
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -157,9 +156,9 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
                 loader, epoch_loss))
 
             # deep copy the model
-            # if loader == 'val' and epoch_acc > best_acc:
-            #     best_acc = epoch_acc
-            #     best_model_wts = copy.deepcopy(model.state_dict())
+            if loader == 'val' and epoch_loss < least_loss:
+                least_loss = epoch_loss
+                best_model_wts = copy.deepcopy(model.state_dict())
 
         print()
 
@@ -172,7 +171,7 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
     model.load_state_dict(best_model_wts)
     return model
 
-model_trained = train_model(Myresnet, My_loaders, myloss, optimizer, num_epochs=25)
+model_trained = train_model(Myresnet, My_loaders, criterion, optimizer, num_epochs=25)
 torch.save(model_trained, 'model_trained.pth') 
 print(Myresnet)
 # test 
