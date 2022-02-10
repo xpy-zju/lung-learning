@@ -28,5 +28,9 @@
 > 5. 训练网络并保存网络，还没做loss可视化之类的
 > 6. 在test上测试，由于暂时无法检验accuracy，因此先采用保存网络，输入测试集并可视化的方法（在test文件夹中存入测试图片，运行test_visulize.py）
 
-![avatar](/1.jpg)
-
+![avatar](/1.png)
+- **目前效果如下**
+  
+![avatar](/2.png)
+![avatar](/3.png)
+![avatar](/4.png)
