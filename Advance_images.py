@@ -20,13 +20,12 @@ from torchvision.transforms import Lambda
 import random
 import numbers
 from torch.utils.tensorboard import SummaryWriter
-from sklearn import metrics
 import cv2
 import os
 import numpy as np
 import pickle
 
-root = '/home/lys/Lung/'                                    #Work dir             #Video
+root = '/home/xiangpy/lab/2022_win/'                                    #Work dir             #Video
 img_dir = os.path.join(root, 'output_frame/001')                      #Images
 
 #ls output_frame: 001(Original) 002(Horizontal) 003(Vertical) 004(Rotate90) 005(Rotate270) 006(Color)
@@ -42,6 +41,18 @@ def get_files(root_dir):
     file_names.sort()
     file_paths.sort()
     return file_names, file_paths
+
+
+def get_filename(path= 'output_frame/001',filetype ='.jpg'):
+    name =[]
+    final_name = []
+    for root,dirs,files in os.walk(path):
+        for i in files:
+            if filetype in i:
+                name.append(i.replace(filetype,''))#生成不带‘.json’后缀的文件名组成的列表
+    final_name = [item + filetype for item in name]#生成‘.json’后缀的文件名组成的列表
+    return final_name      #输出由有‘.json'后缀的文件名组成的列表
+# print(get_filename(path, filetype))
 
 
 def pil_loader(path):
@@ -134,11 +145,11 @@ Color_J = transforms.Compose([
         ColorJitter(0.5,0.5,0.5,0.5)
         ])
 
-img_file_names, img_file_paths = get_files(img_dir)  # Get the file path and name of the original version
+img_file_names = get_filename()  # Get the file path and name of the original version
 #print(img_file_names[3])
 
-for i in range(4401):    # len(img_file_names) = 4401
-    img = pil_loader(img_file_paths[i])
+for i in range(len(img_file_names)):    # len(img_file_names) = 4401
+    img = pil_loader('output_frame/001/' + img_file_names[i])
 
     Two = Horizontal_flip(img)
     Two.save("./output_frame/002/"+img_file_names[i])

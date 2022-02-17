@@ -1,3 +1,4 @@
+from math import ceil
 from statistics import mode
 import numpy as np
 import torch
@@ -7,7 +8,7 @@ import os
 import cv2
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = torch.load('model_trained.pth')
+model = torch.load('model_trained1.pth')
 model = model.to(device)
 model.eval()
 
@@ -19,9 +20,9 @@ preprocess = transforms.Compose([
     #transforms.Scale(256),
     #transforms.CenterCrop(224),
     transforms.ToTensor(),
-    transforms.Normalize(
-    mean=[0.485, 0.456, 0.406],
-    std=[0.229, 0.224, 0.225])
+    # transforms.Normalize(
+    # mean=[0.485, 0.456, 0.406],
+    # std=[0.229, 0.224, 0.225])
 ])
 
 
@@ -55,7 +56,7 @@ for img in get_filename():
     img = cv2.imread(('output_frame/test/'+img))
     height = img.shape[0]
     width = img.shape[1]
-    for num in range(round(3*output[0])):
+    for num in range(ceil(3*output[0])):
         w = int(output[3*num + 1]*img.shape[0])
         h = int(output[3*num + 2]*img.shape[0])
         r = int(output[3*num + 3]*img.shape[0])

@@ -21,15 +21,15 @@ length_label = 10
 
 # resnet18 model
 Myresnet = models.resnet18(pretrained=True)
-for param in Myresnet.parameters():
-    param.requires_grad = False
+# for param in Myresnet.parameters():
+#     param.requires_grad = False
 
 num_ftrs = Myresnet.fc.in_features #512
 Myresnet.fc = nn.Sequential(
     nn.Dropout(0.5),
-    nn.Linear(num_ftrs, 256),
+    nn.Linear(num_ftrs, 206),
     nn.ReLU(),
-    nn.Linear(256, 10),
+    nn.Linear(206, 10),
     nn.Sigmoid()
 )
 
@@ -53,14 +53,21 @@ Myresnet.fc = nn.Sequential(
 #             print("requires_grad: False ", name)
 
 Myresnet = Myresnet.to(device)
-optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.0005, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
 # exp_lr_scheduler = optim.lr_scheduler.StepLR(optim.optimizer_ft, step_size=7, gamma=0.1)
 # x = torch.rand(1,3,224,224)
 # x = x.to(device)
 # y = Myresnet(x).to(device)
 # print(y)
 
-
+loss1 = nn.MSELoss()
+def criterion(outputs,labels):
+    # 暂时使用MSE均方损失函数，之后根据目标检测的特性优化为IOU或者其他损失函数
+    cost = loss1(outputs,labels)
+    return cost
+# a = torch.rand(1,5)
+# b = torch.rand(1,5)
+# print(criterion(a,b))
 
 
 class myMSEloss(nn.Module):
@@ -72,32 +79,43 @@ class myMSEloss(nn.Module):
             if labels[i][0] == 0:
                 loss += 10*(outputs[i][0]-labels[i][0])**2
             elif labels[i][0] == 1:
-                loss += 7*(outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2
+                loss += 7*(outputs[i][0]-labels[i][0])**2 + 1*(outputs[i][1]-labels[i][1])**2+ 1*(outputs[i][2]-labels[i][2])**2+ 1*(outputs[i][3]-labels[i][3])**2
             elif labels[i][0] == 2:
-                loss += 4*(outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2 + 2*(outputs[i][4]-labels[i][4])**2+ 2*(outputs[i][5]-labels[i][5])**2+ 2*(outputs[i][6]-labels[i][6])**2
+                loss += 4*(outputs[i][0]-labels[i][0])**2 + 1*(outputs[i][1]-labels[i][1])**2+ 1*(outputs[i][2]-labels[i][2])**2+ 1*(outputs[i][3]-labels[i][3])**2 + 1*(outputs[i][4]-labels[i][4])**2+ 1*(outputs[i][5]-labels[i][5])**2+ 1*(outputs[i][6]-labels[i][6])**2
             elif labels[i][0] == 3:
-                loss += (outputs[i][0]-labels[i][0])**2 + 2*(outputs[i][1]-labels[i][1])**2+ 2*(outputs[i][2]-labels[i][2])**2+ 2*(outputs[i][3]-labels[i][3])**2 + 2*(outputs[i][4]-labels[i][4])**2+ 2*(outputs[i][5]-labels[i][5])**2+ 2*(outputs[i][6]-labels[i][6])**2+ 2*(outputs[i][7]-labels[i][7])**2+ 2*(outputs[i][8]-labels[i][8])**2+ 2*(outputs[i][9]-labels[i][9])**2
+                loss += (outputs[i][0]-labels[i][0])**2 + 1*(outputs[i][1]-labels[i][1])**2+ 1*(outputs[i][2]-labels[i][2])**2+ 1*(outputs[i][3]-labels[i][3])**2 + 1*(outputs[i][4]-labels[i][4])**2+ 1*(outputs[i][5]-labels[i][5])**2+ 1*(outputs[i][6]-labels[i][6])**2+ 1*(outputs[i][7]-labels[i][7])**2+ 1*(outputs[i][8]-labels[i][8])**2+ 1*(outputs[i][9]-labels[i][9])**2
         loss = loss/len(outputs)
         return   (torch.tensor(0.0, requires_grad=True) if loss ==0  else loss)
 myloss = myMSEloss()
 
-loss1 = nn.MSELoss()
-def criterion(outputs,labels):
-    # 暂时使用MSE均方损失函数，之后根据目标检测的特性优化为IOU或者其他损失函数
-    cost = loss1(outputs,labels)
-    return cost
-# a = torch.rand(1,5)
-# b = torch.rand(1,5)
-# print(criterion(a,b))
+class myMSEloss2(nn.Module):
+    def __init__(self):
+        super().__init__()
+    def forward(self, outputs, labels):
+        loss = 0
+        for i in range(len(outputs)):
+            if labels[i][0] == 0:
+                loss += loss1(outputs[i][0],labels[i][0])
+            elif round(3*labels[i][0].item()) == 1:
+                loss += loss1(outputs[i][0:3],labels[i][0:3])
+            elif round(3*labels[i][0].item()) == 2:
+                loss += loss1(outputs[i][0:6],labels[i][0:6])
+            elif round(3*labels[i][0].item()) == 3:
+                loss += loss1(outputs[i][0:9],labels[i][0:9])
+        loss = loss/len(outputs)
+        return   (torch.tensor(0.0, requires_grad=True) if loss ==0  else loss)
+myloss2 = myMSEloss2()
+
+#将每张照片的label按x坐标重新排列一下 唉
 
 #####################################
 # Dataset process
 
 train_data = dataloader.mydataset_train()
-trainloader = dataloader.DataLoader(train_data, batch_size=20, shuffle=True)
+trainloader = dataloader.DataLoader(train_data, batch_size=30, shuffle=True)
 
 val_data = dataloader.mydataset_train()
-valloader = dataloader.DataLoader(val_data, batch_size=20, shuffle=True)
+valloader = dataloader.DataLoader(val_data, batch_size=30, shuffle=True)
 
 My_loaders = {'train':trainloader, 'val':valloader}
 
@@ -171,7 +189,7 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
     model.load_state_dict(best_model_wts)
     return model
 
-model_trained = train_model(Myresnet, My_loaders, criterion, optimizer, num_epochs=25)
+model_trained = train_model(Myresnet, My_loaders, criterion, optimizer, num_epochs=10)
 torch.save(model_trained, 'model_trained.pth') 
 print(Myresnet)
 # test 
