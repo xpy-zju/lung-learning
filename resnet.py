@@ -13,9 +13,12 @@ import torch.optim as optim
 import torchvision
 from torchvision import transforms, datasets,models
 import dataloader
+from torch.utils.tensorboard import SummaryWriter
+
 
 # define device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(torch.cuda.is_available())
 
 length_label = 10
 
@@ -111,15 +114,19 @@ myloss2 = myMSEloss2()
 #####################################
 # Dataset process
 
+Batch_size = 30
+Batch_len = 140736  / Batch_size
+
 train_data = dataloader.mydataset_train()
-trainloader = dataloader.DataLoader(train_data, batch_size=30, shuffle=True)
+trainloader = dataloader.DataLoader(train_data, batch_size=Batch_size, shuffle=True)
 
 val_data = dataloader.mydataset_train()
-valloader = dataloader.DataLoader(val_data, batch_size=30, shuffle=True)
+valloader = dataloader.DataLoader(val_data, batch_size=Batch_size, shuffle=True)
 
 My_loaders = {'train':trainloader, 'val':valloader}
 
 print(My_loaders['train'].__len__())
+print(My_loaders['val'].__len__())
 
 #####################################
 
@@ -129,6 +136,8 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
     least_loss = 10
+
+    writer = SummaryWriter('log/')
 
     for epoch in range(num_epochs):
         print('Epoch {}/{}'.format(epoch, num_epochs - 1))
@@ -145,6 +154,7 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
             # running_corrects = 0 暂时没法搞corrects
 
             # Iterate over data.
+            iter = 0
             for inputs, labels in loaders[loader]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
@@ -162,13 +172,31 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
                         loss.backward()
                         optimizer.step()
                 # statistics
+                Batch_loss = loss.item() * inputs.size(0)
                 running_loss += loss.item() * inputs.size(0)
                 # running_corrects += ?
             # if loader == 'train':
             #     scheduler.step()
+            
+            #Record loss in every batch
+                if loader == 'train':
+                    writer.add_scalar('Traning Loss for batch', Batch_loss/Batch_size, epoch*My_loaders['train'].__len__()+iter)     # loss / 30 images  -> per image loss,  No.Batch
+                    iter+=1
+                    percent = round( iter / My_loaders['train'].__len__() * 100, 2)
+                    print('Training progress: %s [%d/%d]' % (str(percent) + '%', iter, My_loaders['train'].__len__()), end='\r')
+                else:
+                    writer.add_scalar('Validating Loss for batch', Batch_loss/Batch_size, epoch*My_loaders['val'].__len__()+iter)     # loss / 30 images  -> per image loss,  No.Batch
+                    iter+=1
+                    percent = round( iter / My_loaders['val'].__len__() * 100, 2)
+                    print('Validating progress: %s [%d/%d]' % (str(percent) + '%', iter, My_loaders['val'].__len__()), end='\r')
+
 
             epoch_loss = running_loss / loaders[loader].__len__()
             # epoch_acc = running_corrects.double() / loaders[loader].__len__()
+            if loader == 'train':
+                writer.add_scalar('Traning Loss for epoch', epoch_loss, epoch)
+            else:
+                writer.add_scalar('Validating Loss for epoch', epoch_loss, epoch)
 
             print('{} Loss: {:.4f} '.format(
                 loader, epoch_loss))
