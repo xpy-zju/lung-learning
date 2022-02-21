@@ -53,7 +53,7 @@ Myresnet.fc = nn.Sequential(
 #             print("requires_grad: False ", name)
 
 Myresnet = Myresnet.to(device)
-optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.001, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.005, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
 # exp_lr_scheduler = optim.lr_scheduler.StepLR(optim.optimizer_ft, step_size=7, gamma=0.1)
 # x = torch.rand(1,3,224,224)
 # x = x.to(device)
@@ -112,10 +112,10 @@ myloss2 = myMSEloss2()
 # Dataset process
 
 train_data = dataloader.mydataset_train()
-trainloader = dataloader.DataLoader(train_data, batch_size=30, shuffle=True)
+trainloader = dataloader.DataLoader(train_data, batch_size=100, shuffle=True)
 
 val_data = dataloader.mydataset_train()
-valloader = dataloader.DataLoader(val_data, batch_size=30, shuffle=True)
+valloader = dataloader.DataLoader(val_data, batch_size=100, shuffle=True)
 
 My_loaders = {'train':trainloader, 'val':valloader}
 
