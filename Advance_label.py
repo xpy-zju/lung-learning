@@ -22,10 +22,10 @@ Two["x3"].replace(1, 0, inplace=True)
 for i in range(len(Two)):
     Two.loc[i,'path'] = Two.loc[i,'path'].replace('001','002',1)
 
-with open('Label/001.csv','a') as f:
-    writer = csv.writer(f)
+with open('Label/002.csv','a') as f:
+    writer2 = csv.writer(f)
     for i in range(len(Two)):
-        writer.writerow(Two.loc[i])
+        writer2.writerow(Two.loc[i])
 
 # Vertical Flip
 # x = x   y = 1-y
@@ -45,10 +45,10 @@ Three["y3"].replace(1, 0, inplace=True)
 for i in range(len(Three)):
     Three.loc[i,'path'] = Three.loc[i,'path'].replace('001','003',1)
 
-with open('Label/001.csv','a') as f:
-    writer = csv.writer(f)
+with open('Label/002.csv','a') as f:
+    writer3 = csv.writer(f)
     for i in range(len(Three)):
-        writer.writerow(Three.loc[i])
+        writer3.writerow(Three.loc[i])
 
 # Rotate 90
 # x = y   y = 1-x
@@ -76,10 +76,10 @@ for i in range(len(Four)):
     Four.loc[i,'path'] = Four.loc[i,'path'].replace('001','004',1)
 
 
-with open('Label/001.csv','a') as f:
-    writer = csv.writer(f)
+with open('Label/002.csv','a') as f:
+    writer4 = csv.writer(f)
     for i in range(len(Four)):
-        writer.writerow(Four.loc[i])
+        writer4.writerow(Four.loc[i])
 
 # Rotate 270
 # x = 1 - y y = x
@@ -104,17 +104,17 @@ Five["y2"].replace(1, 0, inplace=True)
 Five["y3"].replace(1, 0, inplace=True)
 for i in range(len(Five)):
     Five.loc[i,'path'] = Five.loc[i,'path'].replace('001','005',1)
-with open('Label/001.csv','a') as f:
-    writer = csv.writer(f)
+with open('Label/002.csv','a') as f:
+    writer5 = csv.writer(f)
     for i in range(len(Five)):
-        writer.writerow(Five.loc[i])
+        writer5.writerow(Five.loc[i])
 
 # Color
 # x = x y = y
 Six = pd.read_csv("./Label/001.csv")
 for i in range(len(Six)):
     Six.loc[i,'path'] = Six.loc[i,'path'].replace('001','006',1)
-with open('Label/001.csv','a') as f:
-    writer = csv.writer(f)
+with open('Label/002.csv','a') as f:
+    writer6 = csv.writer(f)
     for i in range(len(Six)):
-        writer.writerow(Six.loc[i])
+        writer6.writerow(Six.loc[i])

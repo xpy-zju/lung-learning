@@ -56,7 +56,7 @@ Myresnet.fc = nn.Sequential(
 #             print("requires_grad: False ", name)
 
 Myresnet = Myresnet.to(device)
-optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.005, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
+optimizer = optim.Adam(filter(lambda p: p.requires_grad, Myresnet.parameters()), lr=0.0001, betas=(0.9, 0.999), eps=1e-08, weight_decay=1e-5)
 # exp_lr_scheduler = optim.lr_scheduler.StepLR(optim.optimizer_ft, step_size=7, gamma=0.1)
 # x = torch.rand(1,3,224,224)
 # x = x.to(device)
@@ -115,20 +115,14 @@ myloss2 = myMSEloss2()
 # Dataset process
 
 Batch_size = 30
-Batch_len = 140736  / Batch_size
+Batch_len = len(dataloader.img_path_np) / Batch_size
+
 
 train_data = dataloader.mydataset_train()
-<<<<<<< HEAD
-trainloader = dataloader.DataLoader(train_data, batch_size=100, shuffle=True)
+trainloader = dataloader.DataLoader(train_data, Batch_size, shuffle=True)
 
-val_data = dataloader.mydataset_train()
-valloader = dataloader.DataLoader(val_data, batch_size=100, shuffle=True)
-=======
-trainloader = dataloader.DataLoader(train_data, batch_size=Batch_size, shuffle=True)
-
-val_data = dataloader.mydataset_train()
-valloader = dataloader.DataLoader(val_data, batch_size=Batch_size, shuffle=True)
->>>>>>> 5e4657ca56c08bad8b53602ae033985735042358
+val_data = dataloader.mydataset_val()
+valloader = dataloader.DataLoader(val_data, Batch_size, shuffle=True)
 
 My_loaders = {'train':trainloader, 'val':valloader}
 
@@ -180,7 +174,7 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
                         optimizer.step()
                 # statistics
                 Batch_loss = loss.item() * inputs.size(0)
-                running_loss += loss.item() * inputs.size(0)
+                running_loss += Batch_loss
                 # running_corrects += ?
             # if loader == 'train':
             #     scheduler.step()
@@ -196,7 +190,8 @@ def train_model(model, loaders, criterion, optimizer, num_epochs=25):
                     iter+=1
                     percent = round( iter / My_loaders['val'].__len__() * 100, 2)
                     print('Validating progress: %s [%d/%d]' % (str(percent) + '%', iter, My_loaders['val'].__len__()), end='\r')
-
+            
+            print(loaders[loader].__len__())
 
             epoch_loss = running_loss / loaders[loader].__len__()
             # epoch_acc = running_corrects.double() / loaders[loader].__len__()
