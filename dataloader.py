@@ -15,7 +15,7 @@ from torchvision import transforms, utils
 from PIL import Image
 import cv2 as cv
 
-label_file = pd.read_csv('label2.csv')
+label_file = pd.read_csv('Label/sorted.csv')
 # print(df.info())
 # print(label_file.head())
 

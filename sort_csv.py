@@ -2,7 +2,7 @@ from operator import index
 import pandas as pd
 import copy
 
-df = pd.read_csv('Label/001.csv')
+df = pd.read_csv('Label/002.csv')
 
 for i in range(len(df)):
     temp = df.loc[i].tolist()
@@ -30,4 +30,4 @@ for i in range(len(df)):
     df.loc[i,'r3'] = temp[8]
 
 print(df)
-df.to_csv('label2.csv', index=False)
+df.to_csv('Label/sorted.csv', index=False)
