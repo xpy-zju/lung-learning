@@ -25,7 +25,6 @@ label_file = label_file.sample(frac=1)
 img_path = label_file['path']
 img_path_np = img_path.values
 
-np.random.shuffle(img_path_np)
 # print(img_path_np)
 #记得随机处理视频图像数据,给图片文件随机重命名就可以了
 #将数据集7/3 分为训练和验证
