@@ -14,6 +14,7 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms, utils
 from PIL import Image
 import cv2 as cv
+import random
 
 label_file = pd.read_csv('Label/sorted.csv')
 # print(df.info())
@@ -21,6 +22,7 @@ label_file = pd.read_csv('Label/sorted.csv')
 
 img_path = label_file['path']
 img_path_np = img_path.values
+random.shuffle(img_path_np)
 
 #记得随机处理视频图像数据,给图片文件随机重命名就可以了
 #将数据集7/3 分为训练和验证
