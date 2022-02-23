@@ -17,13 +17,16 @@ import cv2 as cv
 import random
 
 label_file = pd.read_csv('Label/sorted.csv')
+
 # print(df.info())
 # print(label_file.head())
+label_file = label_file.sample(frac=1)
 
 img_path = label_file['path']
 img_path_np = img_path.values
-random.shuffle(img_path_np)
 
+np.random.shuffle(img_path_np)
+# print(img_path_np)
 #记得随机处理视频图像数据,给图片文件随机重命名就可以了
 #将数据集7/3 分为训练和验证
 img_path_np_train = img_path_np[:int(0.7*len(img_path_np))]
